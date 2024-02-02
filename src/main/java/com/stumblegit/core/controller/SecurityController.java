@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +46,7 @@ public class SecurityController {
 
     @Secured("ROLE_USER")
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
+    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response, Errors errors) {
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
                 loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -70,15 +71,15 @@ public class SecurityController {
 
 
     @PostMapping(value = "/register")
-    public String createUser(LoginRequest loginRequest) {
+    public String createUser(LoginRequest loginRequest, Errors errors) {
         User user = userDetailsService.createUser(loginRequest.getUsername(), loginRequest.getPassword());
 
         return  "redirect:/login?" + user.getId();
     }
 
 
-    @RequestMapping("logout")
-    public void logout() {
-
-    }
+//    @RequestMapping("logout")
+//    public void logout() {
+//
+//    }
 }

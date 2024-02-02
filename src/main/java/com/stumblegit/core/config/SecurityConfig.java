@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,21 +48,22 @@ public class SecurityConfig  {
                             .usernameParameter("username")
                             .passwordParameter("password")
                             .loginPage("/login").permitAll()
-                            .failureUrl("/login?failed")
+//                            .failureUrl("/login?failed")
                             .successHandler((request, response, authentication) -> {
                                 System.out.println("Logged user: " + authentication.getName());
                                 response.sendRedirect("/private");
                             })
                     ;
                 })
-                .logout((logout) -> logout
-                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(COOKIES))))
+//                .logout((logout) -> logout
+//                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(COOKIES))))
                 .sessionManagement((session) -> session
                         .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(true)
                 )
                 .passwordManagement((management) -> management.changePasswordPage("/change-password"))
+//                .logout().deleteCookies().invalidateHttpSession(true)
         ;
 
         return http.build();
