@@ -57,16 +57,18 @@ public class SecurityConfig  {
                     ;
                 })
                 .logout((logout) -> logout
-//                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ALL)))
+                        // Note: This is not gonna work if you use http request, only works in https
+                        // the header is only applied if the request is secure
+                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ALL)))
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                 )
-//              .sessionManagement((session) -> session
-//                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
+                .sessionManagement((session) -> session
+                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
 //                        .maximumSessions(1)
 //                        .maxSessionsPreventsLogin(true) // Can cause couldn't login after logout
-//                )
-//                .passwordManagement((management) -> management.changePasswordPage("/change-password"))
+                )
+                .passwordManagement((management) -> management.changePasswordPage("/change-password"))
         ;
 
         return http.build();
@@ -74,6 +76,7 @@ public class SecurityConfig  {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
+        // Only DelegationPasswordEncoder adding signature to the password
         DelegatingPasswordEncoder delegatingPasswordEncoder =
                 (DelegatingPasswordEncoder) PasswordEncoderFactories
                         .createDelegatingPasswordEncoder();
