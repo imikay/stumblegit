@@ -3,6 +3,7 @@ package com.stumblegit.core.controller;
 import com.stumblegit.core.dao.autogen.UserMapper;
 import com.stumblegit.core.model.LoginRequest;
 import com.stumblegit.core.model.User;
+import com.stumblegit.core.service.Impl.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class SecurityController {
@@ -32,6 +34,9 @@ public class SecurityController {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/login")
     String login() {
@@ -66,12 +71,14 @@ public class SecurityController {
 
     @PostMapping(value = "/register")
     public String createUser(LoginRequest loginRequest) {
-        User user = new User();
-        user.setUsername(loginRequest.getUsername());
-        user.setPassword(loginRequest.getPassword());
-
-        userMapper.createUser(user);
+        User user = userDetailsService.createUser(loginRequest.getUsername(), loginRequest.getPassword());
 
         return  "redirect:/login?" + user.getId();
+    }
+
+
+    @RequestMapping("logout")
+    public void logout() {
+
     }
 }
