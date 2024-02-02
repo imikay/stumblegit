@@ -39,6 +39,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         System.out.println("=====================");
         System.out.println(user.getUsername() + " " + user.getPassword());
+        System.out.println(passwordEncoder.matches(password, user.getPassword()));
         System.out.println("=====================");
 
         ArrayList<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
@@ -48,6 +49,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (passwordEncoder.matches(password, user.getPassword())) {
             // use the credentials
             // and authenticate against the third-party system
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
             return new UsernamePasswordAuthenticationToken(name, password, roles);
         } else {
             throw new BadCredentialsException("Bad username or pas" +

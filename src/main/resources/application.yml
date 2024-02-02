@@ -4,11 +4,10 @@ spring:
     username: root
     password: 4542at7s
 
-#  security:
-#    user:
-#      name: root
-#      password: 123456
-#      roles: ROLE_USER
+  session:
+    redis:
+      host: 127.0.0.1
+      port: 6739
 
 mybatis:
   mapper-locations: classpath*:/mapper/**/*.xml

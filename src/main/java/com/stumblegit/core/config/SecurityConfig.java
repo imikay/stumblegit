@@ -16,11 +16,14 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 
+import static org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.ALL;
 import static org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.COOKIES;
 
 /**
@@ -40,7 +43,7 @@ public class SecurityConfig  {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/private").authenticated()
+                                .requestMatchers("/profile/").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .formLogin((formLogin) -> {
@@ -48,22 +51,22 @@ public class SecurityConfig  {
                             .usernameParameter("username")
                             .passwordParameter("password")
                             .loginPage("/login").permitAll()
-//                            .failureUrl("/login?failed")
                             .successHandler((request, response, authentication) -> {
-                                System.out.println("Logged user: " + authentication.getName());
-                                response.sendRedirect("/private");
+                                response.sendRedirect("/profile/");
                             })
                     ;
                 })
-//                .logout((logout) -> logout
-//                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(COOKIES))))
-                .sessionManagement((session) -> session
-                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(true)
+                .logout((logout) -> logout
+//                        .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ALL)))
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                 )
-                .passwordManagement((management) -> management.changePasswordPage("/change-password"))
-//                .logout().deleteCookies().invalidateHttpSession(true)
+//              .sessionManagement((session) -> session
+//                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
+//                        .maximumSessions(1)
+//                        .maxSessionsPreventsLogin(true) // Can cause couldn't login after logout
+//                )
+//                .passwordManagement((management) -> management.changePasswordPage("/change-password"))
         ;
 
         return http.build();
@@ -71,7 +74,13 @@ public class SecurityConfig  {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+        DelegatingPasswordEncoder delegatingPasswordEncoder =
+                (DelegatingPasswordEncoder) PasswordEncoderFactories
+                        .createDelegatingPasswordEncoder();
+
+        delegatingPasswordEncoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder(10));
+
+        return delegatingPasswordEncoder;
     }
 
     @Bean

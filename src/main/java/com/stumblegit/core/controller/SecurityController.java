@@ -6,6 +6,7 @@ import com.stumblegit.core.model.User;
 import com.stumblegit.core.service.Impl.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,25 +46,23 @@ public class SecurityController {
         return "login";
     }
 
-    @Secured("ROLE_USER")
-    @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response, Errors errors) {
-        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
-                loginRequest.getUsername(), loginRequest.getPassword());
-
-        Authentication authentication = authenticationManager.authenticate(token);
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-        System.out.println("=====================================");
-        System.out.println(encoder.matches("123456", " $2a$10$dT6paDz/tXpJ207VwlitpOTap.gCfYdQM11Mv7RBqYyAlFc5EdwD."));
-        System.out.println("encoder:  " + encoder.encode("123456"));
-        System.out.println("=====================================");
-
-        SecurityContext context = securityContextHolderStrategy.createEmptyContext();
-        context.setAuthentication(authentication);
-        securityContextHolderStrategy.setContext(context);
-        securityContextRepository.saveContext(context, request, response);
-    }
+//    @Secured("ROLE_USER")
+//    @PostMapping("/login")
+//    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response, Errors errors) {
+//        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
+//                loginRequest.getUsername(), loginRequest.getPassword());
+//
+//        Authentication authentication = authenticationManager.authenticate(token);
+//
+//        System.out.println("*************************************");
+//        System.out.println(authentication);
+//        System.out.println("**************************************");
+//
+//        SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+//        context.setAuthentication(authentication);
+//        securityContextHolderStrategy.setContext(context);
+//        securityContextRepository.saveContext(context, request, response);
+//    }
 
     @GetMapping("/register")
     public String register() {
@@ -76,17 +75,5 @@ public class SecurityController {
         User user = userDetailsService.createUser(loginRequest.getUsername(), loginRequest.getPassword());
 
         return  "redirect:/login?" + user.getId();
-    }
-
-    @GetMapping("/logout")
-    public String response() {
-        return "/logout";
-    }
-
-    @PostMapping("/logout")
-    public String doLogout() {
-        SecurityContextHolder.clearContext();
-
-        return "redirect: /login?logout=1";
     }
 }
