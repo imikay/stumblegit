@@ -37,7 +37,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        System.out.println(passwordEncoder.matches("123456", user.getPassword()));
+        System.out.println("=====================");
+        System.out.println(user.getUsername() + " " + user.getPassword());
+        System.out.println("=====================");
 
         ArrayList<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
         GrantedAuthority auth = new SimpleGrantedAuthority(user.getAuthorities());

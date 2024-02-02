@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -77,9 +78,15 @@ public class SecurityController {
         return  "redirect:/login?" + user.getId();
     }
 
+    @GetMapping("/logout")
+    public String response() {
+        return "/logout";
+    }
 
-//    @RequestMapping("logout")
-//    public void logout() {
-//
-//    }
+    @PostMapping("/logout")
+    public String doLogout() {
+        SecurityContextHolder.clearContext();
+
+        return "redirect: /login?logout=1";
+    }
 }
