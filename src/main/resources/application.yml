@@ -5,9 +5,19 @@ spring:
     password: 4542at7s
 
   session:
+    storeType: redis
     redis:
       host: 127.0.0.1
       port: 6739
+      flushMode: on_save
+      namespace: stumblegit:session
+  
+server:
+  servlet:
+    session:
+      cookie:
+        name: sg
+      timeout: 60m
 
 mybatis:
   mapper-locations: classpath*:/mapper/**/*.xml
