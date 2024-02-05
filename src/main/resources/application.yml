@@ -19,6 +19,9 @@ spring:
           github:
             clientId: 04d68bea70407c4b1b1a
             clientSecret: 82bb42d76e4db045a205cb9b6cd84f0a5f14750f
+            scope:
+              - user:email
+              - read:user
   
 server:
   servlet:

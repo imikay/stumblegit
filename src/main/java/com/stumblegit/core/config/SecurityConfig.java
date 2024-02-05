@@ -6,6 +6,7 @@ import com.stumblegit.core.service.Impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,13 +14,17 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 
@@ -43,7 +48,7 @@ public class SecurityConfig  {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/profile/").authenticated()
+                                .requestMatchers("/profile/", "/oauth2/info").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .formLogin((formLogin) -> {
@@ -64,11 +69,17 @@ public class SecurityConfig  {
                         .clearAuthentication(true)
                 )
                 .sessionManagement((session) -> session
-                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
+                                .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)
 //                        .maximumSessions(1)
 //                        .maxSessionsPreventsLogin(true) // Can cause couldn't login after logout
                 )
                 .passwordManagement((management) -> management.changePasswordPage("/change-password"))
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
+                .oauth2Login(oauth -> {
+                    oauth.defaultSuccessUrl("/oauth2/info");
+                })
         ;
 
         return http.build();
