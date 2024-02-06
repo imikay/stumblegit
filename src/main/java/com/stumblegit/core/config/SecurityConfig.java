@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 
@@ -74,12 +75,12 @@ public class SecurityConfig  {
 //                        .maxSessionsPreventsLogin(true) // Can cause couldn't login after logout
                 )
                 .passwordManagement((management) -> management.changePasswordPage("/change-password"))
-//                .exceptionHandling(e -> e
-//                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-//                )
-//                .oauth2Login(oauth -> {
-//                    oauth.defaultSuccessUrl("/oauth2/info");
-//                })
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                )
+                .oauth2Login(oauth -> {
+                    oauth.defaultSuccessUrl("/oauth2/info");
+                })
         ;
 
         return http.build();
