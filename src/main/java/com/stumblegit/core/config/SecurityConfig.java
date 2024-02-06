@@ -48,12 +48,12 @@ public class SecurityConfig  {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/profile/", "/oauth2/info").authenticated()
-                                .anyRequest().permitAll()
+//                                .requestMatchers("/profile/", "/oauth2/info").authenticated()
+                                .anyRequest().authenticated()
                 )
                 .formLogin((formLogin) -> {
                     formLogin
-                            .usernameParameter("username")
+                            .usernameParameter("email")
                             .passwordParameter("password")
                             .loginPage("/login").permitAll()
                             .successHandler((request, response, authentication) -> {
@@ -74,12 +74,12 @@ public class SecurityConfig  {
 //                        .maxSessionsPreventsLogin(true) // Can cause couldn't login after logout
                 )
                 .passwordManagement((management) -> management.changePasswordPage("/change-password"))
-                .exceptionHandling(e -> e
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-                .oauth2Login(oauth -> {
-                    oauth.defaultSuccessUrl("/oauth2/info");
-                })
+//                .exceptionHandling(e -> e
+//                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+//                )
+//                .oauth2Login(oauth -> {
+//                    oauth.defaultSuccessUrl("/oauth2/info");
+//                })
         ;
 
         return http.build();

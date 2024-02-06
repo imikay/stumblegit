@@ -5,7 +5,7 @@ import com.stumblegit.core.model.UserExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface UserDao extends BaseDao<User, Integer, UserExample> {
-    public User loadUserByUsername(String username);
+    public User loadUserByEmail(String email);
     public Boolean userExists(String username);
 
     public void createUser(@Param("user") User user);

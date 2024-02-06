@@ -7,6 +7,7 @@ import lombok.Setter;
 public class LoginRequest {
     private String username;
     private String password;
+    private String email;
 
     public String getPassword() {
         return password;
@@ -22,5 +23,13 @@ public class LoginRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

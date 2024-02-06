@@ -28,13 +28,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
-        User user = userMapper.loadUserByUsername(authentication.getName());
+        User user = userMapper.loadUserByEmail(authentication.getPrincipal().toString());
 
         if (user == null) {
             throw new UsernameNotFoundException("user not found");
         }
 
-        String name = authentication.getName();
+        String name = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
 
         System.out.println("=====================");

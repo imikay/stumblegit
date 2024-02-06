@@ -1,5 +1,6 @@
 package com.stumblegit.core.service.Impl;
 
+import com.github.javafaker.Faker;
 import com.stumblegit.core.dao.autogen.UserMapper;
 import com.stumblegit.core.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException {
-        User user = userMapper.loadUserByUsername(username);
+        User user = userMapper.loadUserByEmail(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("Not found user " + username);
@@ -30,15 +31,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public org.springframework.security.core.userdetails.User convertToSecurityUser(User user) {
         return (org.springframework.security.core.userdetails.User) org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
+                .username(user.getEmail())
                 .password(user.getPassword())
                 .roles(user.getAuthorities())
                 .build();
     }
 
-    public User createUser(String username, String password) {
+    public User createUser(String email, String password) {
         User user = new User();
+
+        Faker faker = new Faker();
+
+        String username = faker.random().toString();
+
         user.setUsername(username);
+        user.setEmail(email);
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
 

@@ -1,5 +1,6 @@
 package com.stumblegit.core.controller;
 
+import com.github.javafaker.Faker;
 import com.stumblegit.core.dao.autogen.UserMapper;
 import com.stumblegit.core.model.LoginRequest;
 import com.stumblegit.core.model.User;
@@ -19,11 +20,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Controller
 public class SecurityController {
@@ -72,7 +76,7 @@ public class SecurityController {
 
     @PostMapping(value = "/register")
     public String createUser(LoginRequest loginRequest, Errors errors) {
-        User user = userDetailsService.createUser(loginRequest.getUsername(), loginRequest.getPassword());
+        User user = userDetailsService.createUser(loginRequest.getEmail(), loginRequest.getPassword());
 
         return  "redirect:/login?" + user.getId();
     }
